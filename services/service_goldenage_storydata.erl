@@ -4,8 +4,9 @@
 
 process_get(_, Context) ->
     Id = m_rsc:name_to_id_check(z_context:get_q("id", Context), Context),
-    {name, story} = proplists:lookup(name, m_rsc:p(Id, category, Context)),
-
+    {name, N} = proplists:lookup(name, m_rsc:p(Id, category, Context)),
+    <<"story">> = z_convert:to_binary(N),
+    
     {struct, StoryInfo} = ga_util:rsc_json(Id, [title, summary, publication_start, image], Context),
 
     {struct,
