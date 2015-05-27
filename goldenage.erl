@@ -25,7 +25,9 @@
 
 -include_lib("zotonic.hrl").
 
--export([manage_schema/2]).
+-export([
+         manage_schema/2,
+         observe_rsc_update/3]).
 
 %%====================================================================
 %% support functions go here
@@ -77,3 +79,18 @@ manage_schema(install, _Context) ->
                     [{person, group}]}
                   ]
       }.
+
+observe_rsc_update(#rsc_update{}, {Ch, Props}, _) ->
+    lists:foldl(
+      fun(K, {Ch1, Props1}) ->
+              case proplists:get_value(K, Props) of
+                  undefined ->
+                      {Ch1, Props1};
+                  T ->
+                      Props2 = z_utils:prop_replace(K, z_convert:to_integer(T), Props1),
+                      {true, Props2}
+              end
+      end,
+      {Ch, Props},
+      [time, major, minor]
+     ).
