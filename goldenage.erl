@@ -56,7 +56,20 @@ manage_schema(install, _Context) ->
                     [{title, <<"Card">>}]},
                    {group,
                     goldenage,
-                    [{title, <<"Person group">>}]}
+                    [{title, <<"Person group">>}]},
+                   {hashtag,
+                    goldenage,
+                    [{title, <<"Hashtag">>}]},
+
+                   {checkin, card, [{title, <<"Card - Checkin">>}, {feature_show_address, false}]},
+                   {friend_request, card, [{title, <<"Card - Friend request">>}, {feature_show_address, false}]},
+                   {friendship, card, [{title, <<"Card - New friendship">>}, {feature_show_address, false}]},
+                   {private_message, card, [{title, <<"Card - Private message">>}, {feature_show_address, false}]},
+                   {status_update, card, [{title, <<"Card - Status update">>}, {feature_show_address, false}]},
+                   {attend_event, card, [{title, <<"Card - Attending event">>}, {feature_show_address, false}]},
+                   {tag_picture, card, [{title, <<"Card - Tag in picture">>}, {feature_show_address, false}]},
+                   {join_group, card, [{title, <<"Card - Joined group">>}, {feature_show_address, false}]}
+                   
                   ],
        predicates=[
                    {has_chapter,
@@ -76,7 +89,10 @@ manage_schema(install, _Context) ->
                     [{card, person}]},
                    {has_group,
                     [{title, <<"Part of group">>}],
-                    [{person, group}]}
+                    [{person, group}]},
+                   {has_hashtag,
+                    [{title, <<"Hashtags">>}],
+                    [{card, hashtag}]}
                   ]
       }.
 
