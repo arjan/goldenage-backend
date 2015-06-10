@@ -61,6 +61,14 @@ manage_schema(install, _Context) ->
                     goldenage,
                     [{title, <<"Hashtag">>}]},
 
+                   {historical_person,
+                    person,
+                    [{title, <<"Historical person">>}]},
+                   
+                   {profile,
+                    person,
+                    [{title, <<"Profile">>}]},
+                   
                    {checkin, card, [{title, <<"Card - Checkin">>}, {feature_show_address, false}]},
                    {friend_request, card, [{title, <<"Card - Friend request">>}, {feature_show_address, false}]},
                    {friendship, card, [{title, <<"Card - New friendship">>}, {feature_show_address, false}]},
@@ -86,15 +94,24 @@ manage_schema(install, _Context) ->
                     [{chapter, card}]},
                    {target,
                     [{title, <<"Target">>}],
-                    [{card, person}]},
+                    [{card, historical_person}]},
+                   {author,
+                    [{title, <<"Author">>}],
+                    [{card, historical_person}]},
                    {has_group,
                     [{title, <<"Part of group">>}],
                     [{person, group}]},
                    {has_hashtag,
                     [{title, <<"Hashtags">>}],
-                    [{card, hashtag}]}
+                    [{card, hashtag}]},
+                   {likes,
+                    [{title, <<"Likes">>}],
+                    [{card, historical_person},
+                     {profile, card}
+                    ]}
                   ]
       }.
+
 
 observe_rsc_update(#rsc_update{}, {Ch, Props}, _) ->
     lists:foldl(
