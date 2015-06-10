@@ -12,6 +12,8 @@
 	    </div>
     </div>
 
+    {% include "form/_field_singleline.tpl" name=`card_date` label="Date" %}
+    
     {% include "form/_field_singleline.tpl" name=`time` label="Card time" %}
 
 </fieldset>
