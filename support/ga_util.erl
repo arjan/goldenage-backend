@@ -5,6 +5,10 @@
 
 trans(undefined, _) ->
     null;
+trans({struct, _}=V, _) ->
+    V;
+trans({array, _}=V, _) ->
+    V;
 trans(T, Context) ->
     case z_utils:is_empty(T) of
         true -> null;
@@ -18,7 +22,6 @@ image(Id, Opts, Context) ->
         _ -> null
     end.
 
-
 rsc_json(Id, Fields, Context) ->
     rsc_json(Id, Fields, [{width, 600}], Context).
 
@@ -28,25 +31,50 @@ rsc_json(Id, Fields, ImgOpts, Context) ->
       {id, Id},
       {category, proplists:get_value(name, m_rsc:p(Id, category, Context))}
       |
-      [map_rsc_json_field(Id, K, ImgOpts, Context)|| K <- Fields]
+      lists:filter(fun(undefined) -> false; (_) -> true end, [map_rsc_json_field(Id, K, ImgOpts, Context)|| K <- Fields])
     ]}.
       
 %% images
 map_rsc_json_field(Id, image, ImgOpts, Context) ->
     {image, image(Id, ImgOpts, Context)};
 
+%% images
+map_rsc_json_field(Id, images, ImgOpts, Context) ->
+    Objects = m_edge:objects(Id, depiction, Context),
+    case length(Objects) of
+        N when N > 1 ->
+            {images, {array, [image(ImgId, ImgOpts, Context) || ImgId <- Objects]}};
+        _ ->
+            undefined
+    end;
+
+%% hashtags
+map_rsc_json_field(Id, hashtags, ImgOpts, Context) ->
+    Objects = m_edge:objects(Id, has_hashtag, Context),
+    case length(Objects) of
+        N when N > 1 ->
+            {hashtags, {array, [rsc_json(O, [id, title], Context) || O <- Objects]}};
+        _ ->
+            undefined
+    end;
+
 %% dates
 map_rsc_json_field(Id, DF, _, Context) when DF =:= publication_start; DF =:= publication_end;
-                                                  DF =:= date_start; DF =:= date_end ->
+                                            DF =:= date_start; DF =:= date_end ->
     {DF, z_datetime:format(m_rsc:p(Id, DF, Context), "c", Context)};
 
 %% linked person; get first one
-map_rsc_json_field(Id, {person, Pred}, ImgOpts, Context) ->
+map_rsc_json_field(Id, {edge, Pred}, _ImgOpts, Context) ->
     case m_edge:objects(Id, Pred, Context) of
         [] -> {Pred, null};
         [P|_] ->
-            {Pred, rsc_json(P, [title, summary, image], ImgOpts, Context)}
+            {Pred, P}
     end;
+map_rsc_json_field(Id, {edges, Pred}, _ImgOpts, Context) ->
+    {Pred, {array, m_edge:objects(Id, Pred, Context)}};
 
 map_rsc_json_field(Id, K, _, Context) ->
-    {K, trans(m_rsc:p(Id, K, Context), Context)}.
+    case trans(m_rsc:p(Id, K, Context), Context) of
+        null -> undefined;
+        V -> {K, V}
+    end.

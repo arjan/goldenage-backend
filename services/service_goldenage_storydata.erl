@@ -9,9 +9,13 @@ process_get(_, Context) ->
     
     {struct, StoryInfo} = ga_util:rsc_json(Id, [title, summary, publication_start, image], Context),
 
+    ImgOpts = [{width, 600}],
+    
     {struct,
      [{chapters,
-       {array, [chapter_info(ChId, Context) || ChId <- m_edge:objects(Id, has_chapter, Context)]}}
+       {array, [chapter_info(ChId, Context) || ChId <- m_edge:objects(Id, has_chapter, Context)]}},
+      {persons,
+       collect_person_info(Id, ImgOpts, Context)}
       | StoryInfo
      ]}.
 
@@ -38,7 +42,6 @@ chapter_info(Id, Context) ->
               
 %% zones + beacons
 
-
 zone_info(Id, Context) ->
     {struct, P} = ga_util:rsc_json(Id, [title], Context),
     {struct,
@@ -52,6 +55,25 @@ zone_info(Id, Context) ->
 beacon_info(Id, Context) ->
     ga_util:rsc_json(Id, [title, uuid, major, minor], Context).
 
+%% card
 
 card_info(Id, Context) ->
-    ga_util:rsc_json(Id, [title, summary, body, image, time, {person, author}, {person, target}], Context).
+    ga_util:rsc_json(Id, [title, summary, summary2, image, images, card_date, hashtags, time, {edge, author}, {edge, target}, {edges, liked_by}], Context).
+
+
+collect_person_info(StoryId, ImgOpts, Context) ->
+    ChapterIds = m_edge:objects(StoryId, has_chapter, Context),
+    CardIds =  lists:flatten(
+                 [m_edge:objects(ChId, has_card, Context) ||  ChId <- ChapterIds]),
+    PersonIds = lists:flatten(
+                  [
+                   [m_edge:objects(CardId, P, Context)
+                    || P <- [author, target, liked_by]]
+                   || CardId <- CardIds]),
+
+    {struct,
+     [{P, ga_util:rsc_json(P, [title, summary, image, keyvalue], ImgOpts, Context)}
+      || P <- PersonIds]}.
+
+
+

@@ -64,11 +64,11 @@ manage_schema(install, _Context) ->
                    {historical_person,
                     person,
                     [{title, <<"Historical person">>}, {feature_show_address, false}]},
-                   
+
                    {profile,
                     person,
                     [{title, <<"Profile">>}, {feature_show_address, false}]},
-                   
+
                    {checkin, card, [{title, <<"Card - Checkin">>}, {feature_show_address, false}]},
                    {friend_request, card, [{title, <<"Card - Friend request">>}, {feature_show_address, false}]},
                    {friendship, card, [{title, <<"Card - New friendship">>}, {feature_show_address, false}]},
@@ -77,7 +77,7 @@ manage_schema(install, _Context) ->
                    {attend_event, card, [{title, <<"Card - Attending event">>}, {feature_show_address, false}]},
                    {tag_picture, card, [{title, <<"Card - Tag in picture">>}, {feature_show_address, false}]},
                    {join_group, card, [{title, <<"Card - Joined group">>}, {feature_show_address, false}]}
-                   
+
                   ],
        predicates=[
                    {has_chapter,
@@ -106,14 +106,24 @@ manage_schema(install, _Context) ->
                     [{card, hashtag}]},
                    {likes,
                     [{title, <<"Likes">>}],
-                    [{card, historical_person},
-                     {profile, card}
-                    ]}
+                    [{profile, card}
+                    ]},
+                   {liked_by,
+                    [{title, <<"Liked by">>}],
+                    [{card, historical_person}]}
                   ]
       }.
 
 
-observe_rsc_update(#rsc_update{}, {Ch, Props}, _) ->
+observe_rsc_update(#rsc_update{}, {Ch0, Props0}, _) ->
+    KV = proplists:get_value(keyvalue, Props0),
+    {Ch, Props} = case KV of
+                      undefined -> {Ch0, Props0};
+                      V ->
+                          lager:warning("V: ~p", [V]),
+                          KeyValue = z_convert:convert_json(mochijson:decode(z_html:unescape(V))),
+                          {true, z_utils:prop_replace(keyvalue, KeyValue, Props0)}
+                  end,
     lists:foldl(
       fun(K, {Ch1, Props1}) ->
               case proplists:get_value(K, Props) of
