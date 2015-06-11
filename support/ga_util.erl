@@ -13,7 +13,11 @@ trans(T, Context) ->
     case z_utils:is_empty(T) of
         true -> null;
         false ->
-            z_html:unescape(z_trans:trans(T, Context))
+            case z_trans:trans(T, Context) of
+                B when is_binary(B) ->
+                    z_html:unescape(B);
+                T2 -> T2
+            end
     end.
 
 image(Id, Opts, Context) ->
