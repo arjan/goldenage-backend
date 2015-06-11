@@ -13,7 +13,7 @@ trans(T, Context) ->
     case z_utils:is_empty(T) of
         true -> null;
         false ->
-            z_trans:trans(T, Context)
+            z_html:unescape(z_trans:trans(T, Context))
     end.
 
 image(Id, Opts, Context) ->
