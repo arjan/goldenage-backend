@@ -7,6 +7,6 @@ process_get(_, Context) ->
     {array, [story_info(Id, Context) || Id <- Ids]}.
 
 story_info(Id, Context) ->
-    ga_util:rsc_json(Id, [title, summary, publication_start, image], Context).
+    ga_util:rsc_json(Id, [title, subtitle, summary, publication_start, image], Context).
 
              
