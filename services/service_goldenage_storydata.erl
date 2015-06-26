@@ -9,18 +9,20 @@ process_get(_, Context) ->
         <<"story">> -> ok;
         P -> throw({error, not_a_story, z_convert:to_atom(P)})
     end,
-    
-    {struct, StoryInfo} = ga_util:rsc_json(Id, [title, subtitle, summary, publication_start, image], Context),
 
+    {struct, StoryInfo} = ga_util:rsc_json(Id, [title, subtitle, summary, publication_start, image], Context),
     ImgOpts = [{width, 600}],
-    
-    {struct,
-     [{chapters,
-       {array, [chapter_info(ChId, Context) || ChId <- m_edge:objects(Id, has_chapter, Context)]}},
-      {persons,
-       collect_person_info(Id, ImgOpts, Context)}
-      | StoryInfo
-     ]}.
+
+    {
+      {struct,
+       [{chapters,
+         {array, [chapter_info(ChId, Context) || ChId <- m_edge:objects(Id, has_chapter, Context)]}},
+        {persons,
+         collect_person_info(Id, ImgOpts, Context)}
+        | StoryInfo
+       ]},
+      z_context:set_resp_header("Cache-Control", "max-age=3600", Context)
+    }.      
 
 
 %% chapters
@@ -33,7 +35,7 @@ chapter_info(Id, Context) ->
               end,
               [card_info(ZId, Context) || ZId <- m_edge:objects(Id, has_card, Context)]
              ),
-    
+
     {struct,
      [
       {zones,
@@ -42,7 +44,7 @@ chapter_info(Id, Context) ->
        {array, Cards}}
       | P
      ]}.
-              
+
 %% zones + beacons
 
 zone_info(Id, Context) ->
@@ -52,7 +54,7 @@ zone_info(Id, Context) ->
       {beacons,
        {array, [beacon_info(BId, Context) || BId <- m_edge:objects(Id, has_beacon, Context)]}}
       | P
-      ]}.
+     ]}.
 
 
 beacon_info(Id, Context) ->
@@ -68,12 +70,15 @@ collect_person_info(StoryId, ImgOpts, Context) ->
     ChapterIds = m_edge:objects(StoryId, has_chapter, Context),
     CardIds =  lists:flatten(
                  [m_edge:objects(ChId, has_card, Context) ||  ChId <- ChapterIds]),
-    PersonIds = lists:flatten(
-                  [
-                   [m_edge:objects(CardId, P, Context)
-                    || P <- [author, target, liked_by]]
-                   || CardId <- CardIds]),
-
+    PersonIds = sets:to_list(
+                  sets:from_list(
+                    lists:flatten(
+                      [
+                       [m_edge:objects(CardId, P, Context)
+                        || P <- [author, target, liked_by]]
+                       || CardId <- CardIds])
+                   )
+                 ),
     {struct,
      [{P, ga_util:rsc_json(P, [title, summary, image, keyvalue], ImgOpts, Context)}
       || P <- PersonIds]}.

@@ -4,6 +4,8 @@
 
     {% include "form/_field_singleline.tpl" name=`title` label="Title" %}
 
+    {% include "form/_field_singleline.tpl" name=`language` label="Language (nl / en)" short %}
+
     {% include "form/_field_singleline.tpl" name=`subtitle` label="Subtitle (hashtags)" %}
     {% include "form/_field_textarea.tpl" name=`summary` label="Story summary" %}
 
