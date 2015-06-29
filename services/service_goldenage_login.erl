@@ -26,6 +26,3 @@ process_post(_, Context) ->
              end,
     service_goldenage_userinfo:info(UID, Context).
 
-
-
-

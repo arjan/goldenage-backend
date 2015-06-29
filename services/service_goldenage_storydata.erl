@@ -2,6 +2,9 @@
 
 -export([process_get/2]).
 
+-export([get_persons_for_card_ids/3, card_info/2]).
+
+
 process_get(_, Context) ->
     Id = m_rsc:name_to_id_check(z_context:get_q("id", Context), Context),
     {name, N} = proplists:lookup(name, m_rsc:p(Id, category, Context)),
@@ -70,6 +73,9 @@ collect_person_info(StoryId, ImgOpts, Context) ->
     ChapterIds = m_edge:objects(StoryId, has_chapter, Context),
     CardIds =  lists:flatten(
                  [m_edge:objects(ChId, has_card, Context) ||  ChId <- ChapterIds]),
+    get_persons_for_card_ids(CardIds, ImgOpts, Context).
+
+get_persons_for_card_ids(CardIds, ImgOpts, Context) ->
     PersonIds = sets:to_list(
                   sets:from_list(
                     lists:flatten(
@@ -82,6 +88,3 @@ collect_person_info(StoryId, ImgOpts, Context) ->
     {struct,
      [{P, ga_util:rsc_json(P, [title, summary, image, keyvalue], ImgOpts, Context)}
       || P <- PersonIds]}.
-
-
-
