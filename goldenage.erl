@@ -27,7 +27,9 @@
 
 -export([
          manage_schema/2,
-         observe_rsc_update/3]).
+         observe_rsc_update/3,
+         observe_service_authorize/2
+        ]).
 
 %%====================================================================
 %% support functions go here
@@ -137,3 +139,31 @@ observe_rsc_update(#rsc_update{}, {Ch0, Props0}, _) ->
       {Ch, Props},
       [time, major, minor]
      ).
+
+
+observe_service_authorize(#service_authorize{}, Context) ->
+    ReqData = z_context:get_reqdata(Context),
+    case z_context:get_req_header("authorization", Context) of
+        "E-mail " ++ Email ->
+            case z_email_utils:is_email(Email) of
+                true ->
+                    case m_identity:lookup_by_type_and_key(email_only, Email, Context) of
+                        undefined ->
+                            authorize("Unknown email, please login first.", Context);
+                        R ->
+                            UserId = proplists:get_value(rsc_id, R),
+                            AuthContext = z_acl:logon(UserId, Context),
+                            {true, ReqData, AuthContext}
+                    end;
+                false ->
+                    authorize("Valid e-mail address required.", Context)
+            end;
+        _ ->
+            authorize("Authorization required.", Context)
+    end.
+
+
+authorize(Reason, Context) ->
+    ReqData = z_context:get_reqdata(Context),
+    ReqData1 = wrq:set_resp_body(Reason ++ "\n", ReqData),
+    {{halt, 401}, ReqData1, Context}.
