@@ -23,6 +23,18 @@ process_post(_, Context) ->
                      UserId = proplists:get_value(rsc_id, R),
                      m_rsc:update(UserId, [{title, Name}], SudoContext),
                      UserId
-             end,
+          end,
+
+    case z_context:get_q("avatar", Context) of
+        undefined -> nop;
+        #upload{}=Upload ->
+            case m_media:insert_file(Upload, [], SudoContext) of
+                {ok, Id} ->
+                    m_edge:replace(UID, depiction, [Id], SudoContext);
+                _=E ->
+                    lager:error("Upload error: ~p", [E])
+            end
+    end,
+    
     service_goldenage_userinfo:info(UID, Context).
 
