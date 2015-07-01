@@ -13,7 +13,7 @@ process_get(_, Context) ->
         P -> throw({error, not_a_story, z_convert:to_atom(P)})
     end,
 
-    {struct, StoryInfo} = ga_util:rsc_json(Id, [title, subtitle, summary, publication_start, image], Context),
+    {struct, StoryInfo} = ga_util:rsc_json(Id, [title, subtitle, summary, publication_start, thumbnail, language, image], Context),
     ImgOpts = [{width, 600}],
 
     {
