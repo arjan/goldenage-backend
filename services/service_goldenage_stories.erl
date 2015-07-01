@@ -11,6 +11,6 @@ process_get(_, Context) ->
 
 
 story_info(Id, Context) ->
-    ga_util:rsc_json(Id, [title, subtitle, summary, publication_start, image], Context).
+    ga_util:rsc_json(Id, [title, subtitle, summary, publication_start, language, thumbnail, image], Context).
 
              

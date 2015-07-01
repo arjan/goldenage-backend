@@ -42,6 +42,15 @@ rsc_json(Id, Fields, ImgOpts, Context) ->
 map_rsc_json_field(Id, image, ImgOpts, Context) ->
     {image, image(Id, ImgOpts, Context)};
 
+%% thumbnail
+map_rsc_json_field(Id, thumbnail, ImgOpts, Context) ->
+    case m_edge:objects(Id, thumbnail, Context) of
+        [T | _] ->
+            {thumbnail, image(T, ImgOpts, Context)};
+        _ ->
+            undefined
+    end;
+
 %% images
 map_rsc_json_field(Id, images, ImgOpts, Context) ->
     Objects = m_edge:objects(Id, depiction, Context),
@@ -53,7 +62,7 @@ map_rsc_json_field(Id, images, ImgOpts, Context) ->
     end;
 
 %% hashtags
-map_rsc_json_field(Id, hashtags, ImgOpts, Context) ->
+map_rsc_json_field(Id, hashtags, _ImgOpts, Context) ->
     Objects = m_edge:objects(Id, has_hashtag, Context),
     case length(Objects) of
         N when N > 1 ->
