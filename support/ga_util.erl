@@ -9,8 +9,6 @@ trans({struct, _}=V, _) ->
     V;
 trans({array, _}=V, _) ->
     V;
-trans(A, _) when is_atom(A) ->
-    z_convert:to_binary(A);
 trans(T, Context) ->
     case z_utils:is_empty(T) of
         true -> null;
