@@ -1,4 +1,4 @@
--module(service_goldenage_personcards).
+-module(service_goldenage_personinfo).
 -svc_needauth(true).
 
 -export([process_get/2]).
@@ -22,6 +22,8 @@ process_get(_, Context) ->
     PersonCards = sets:to_list(sets:intersection(sets:from_list(Seen), sets:from_list(AllPersonCards))),
     ImgOpts = [{width, 600}],
 
+    {struct, Props} = ga_util:rsc_json(Id, [title, summary, image, keyvalue], ImgOpts, Context),
+    
     {struct,
      [
       {cards, {array,
@@ -30,7 +32,7 @@ process_get(_, Context) ->
                    C <- PersonCards]}},
       {persons,
        service_goldenage_storydata:get_persons_for_card_ids(PersonCards, ImgOpts, Context)}
-
+      | Props
      ]}.
 
 
