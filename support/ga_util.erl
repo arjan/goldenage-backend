@@ -86,6 +86,12 @@ map_rsc_json_field(Id, {edge, Pred}, _ImgOpts, Context) ->
 map_rsc_json_field(Id, {edges, Pred}, _ImgOpts, Context) ->
     {Pred, {array, m_edge:objects(Id, Pred, Context)}};
 
+map_rsc_json_field(Id, {subject_edges, Pred, Name}, ImgOpts, Context) ->
+    {Name, {array, [
+                    ga_util:rsc_json(M, [title, subtitle, image], ImgOpts, Context)
+                    || M <- m_edge:subjects(Id, Pred, Context)]
+           }};
+
 map_rsc_json_field(Id, K, _, Context) ->
     case trans(m_rsc:p(Id, K, Context), Context) of
         null -> undefined;

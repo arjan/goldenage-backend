@@ -86,5 +86,5 @@ get_persons_for_card_ids(CardIds, ImgOpts, Context) ->
                    )
                  ),
     {struct,
-     [{P, ga_util:rsc_json(P, [title, summary, image, keyvalue], ImgOpts, Context)}
+     [{P, ga_util:rsc_json(P, [title, subtitle, summary, image, keyvalue], ImgOpts, Context)}
       || P <- PersonIds]}.
