@@ -8,6 +8,8 @@ process_post(_, Context) ->
     Email = z_context:get_q("email", Context),
     Name = z_context:get_q("name", Context),
 
+    lager:warning("Signup: ~p ~p", [Name, Email]),
+    
     SudoContext = z_acl:sudo(Context),
 
     UID = case m_identity:lookup_by_type_and_key(email_only, Email, Context) of
