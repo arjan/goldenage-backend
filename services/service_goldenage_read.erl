@@ -14,9 +14,9 @@ process_post(_, Context) ->
     case Delete of
         false ->
             %% add edge
-            m_edge:insert(Context#context.user_id, has_read, CardId, SudoContext);
+            m_edge:insert(Context#context.user_id, read, CardId, SudoContext);
         true ->
             %% delete it
-            m_edge:delete(Context#context.user_id, has_read, CardId, SudoContext)
+            m_edge:delete(Context#context.user_id, read, CardId, SudoContext)
     end,
     {struct, []}.
