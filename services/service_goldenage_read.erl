@@ -1,4 +1,4 @@
--module(service_goldenage_cardseen).
+-module(service_goldenage_read).
 -svc_needauth(true).
 
 -export([process_post/2]).
@@ -14,9 +14,9 @@ process_post(_, Context) ->
     case Delete of
         false ->
             %% add edge
-            m_edge:insert(Context#context.user_id, cardseen, CardId, SudoContext);
+            m_edge:insert(Context#context.user_id, has_read, CardId, SudoContext);
         true ->
             %% delete it
-            m_edge:delete(Context#context.user_id, cardseen, CardId, SudoContext)
+            m_edge:delete(Context#context.user_id, has_read, CardId, SudoContext)
     end,
     {struct, []}.

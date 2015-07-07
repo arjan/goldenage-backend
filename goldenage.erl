@@ -113,8 +113,8 @@ manage_schema(install, _Context) ->
                     [{title, <<"Likes">>}],
                     [{profile, card}
                     ]},
-                   {cardseen,
-                    [{title, <<"Has seen">>}],
+                   {has_read,
+                    [{title, <<"Has read">>}],
                     [{profile, card}
                     ]},
                    {liked_by,
