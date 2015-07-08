@@ -6,6 +6,7 @@
     font-size: 14px/18px;
     margin: 40px;
     }
+    a { color: white; }
     figure { margin: 0; }
     figure.block-level-image { text-align: center; }
 </style>
