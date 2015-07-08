@@ -15,7 +15,8 @@ process_get(_, Context) ->
 
     %% collect all cards of this person that have been seen by this user.
     Seen = m_edge:objects(Context#context.user_id, read, Context),
-
+    lager:warning("Seen: ~p", [Seen]),
+    
     AllPersonCards = m_edge:subjects(Id, author, Context) ++ m_edge:subjects(Id, target, Context),
     lager:warning("AllPersonCards: ~p", [AllPersonCards]),
     
