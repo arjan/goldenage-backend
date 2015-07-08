@@ -14,7 +14,7 @@ process_get(_, Context) ->
     end,
 
     %% collect all cards of this person that have been seen by this user.
-    Seen = m_edge:objects(Context#context.user_id, cardseen, Context),
+    Seen = m_edge:objects(Context#context.user_id, read, Context),
 
     AllPersonCards = m_edge:subjects(Id, author, Context) ++ m_edge:subjects(Id, target, Context),
 
