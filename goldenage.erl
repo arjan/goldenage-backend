@@ -37,6 +37,16 @@
 
 manage_schema(install, _Context) ->
     #datamodel{
+       resources=[
+                  {page_credits,
+                   text,
+                   [{title, <<"Credits">>},
+                    {page_path, <<"/app/credits">>}]},
+                  {page_help,
+                   text,
+                   [{title, <<"Help">>},
+                    {page_path, <<"/app/help">>}]}
+                 ],
        categories=[
                    {goldenage,
                     undefined,
