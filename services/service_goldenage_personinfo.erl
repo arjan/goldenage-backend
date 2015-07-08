@@ -16,13 +16,12 @@ process_get(_, Context) ->
 
     %% collect all cards of this person that have been seen by this user.
     Seen = m_edge:objects(Context#context.user_id, read, Context),
-    lager:warning("Seen: ~p", [Seen]),
-    
+
+    %% all cards of this person
     AllPersonCards = m_edge:subjects(Id, author, Context) ++ m_edge:subjects(Id, target, Context),
-    lager:warning("AllPersonCards: ~p", [AllPersonCards]),
-    
+
+    %% intersect it
     PersonCards = sets:to_list(sets:intersection(sets:from_list(Seen), sets:from_list(AllPersonCards))),
-    lager:warning("PersonCards: ~p", [PersonCards]),
     
     ImgOpts = [{width, 600}],
 
