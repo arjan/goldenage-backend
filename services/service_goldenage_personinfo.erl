@@ -17,8 +17,11 @@ process_get(_, Context) ->
     Seen = m_edge:objects(Context#context.user_id, read, Context),
 
     AllPersonCards = m_edge:subjects(Id, author, Context) ++ m_edge:subjects(Id, target, Context),
-
+    lager:warning("AllPersonCards: ~p", [AllPersonCards]),
+    
     PersonCards = sets:to_list(sets:intersection(sets:from_list(Seen), sets:from_list(AllPersonCards))),
+    lager:warning("PersonCards: ~p", [PersonCards]),
+    
     ImgOpts = [{width, 600}],
 
     GroupIds = m_edge:objects(Id, has_group, Context),
