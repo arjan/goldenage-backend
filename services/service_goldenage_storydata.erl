@@ -66,7 +66,7 @@ beacon_info(Id, Context) ->
 %% card
 
 card_info(Id, Context) ->
-    ga_util:rsc_json(Id, [title, summary, summary2, image, images, card_date, hashtags, time, {edge, author}, {edge, target}, {edges, liked_by}], Context).
+    ga_util:rsc_json(Id, [title, summary, summary2, image, images, card_date, hashtags, time, {edge, author}, {edge, target}, {edges, likes}], Context).
 
 
 collect_person_info(StoryId, ImgOpts, Context) ->
@@ -81,7 +81,7 @@ get_persons_for_card_ids(CardIds, ImgOpts, Context) ->
                     lists:flatten(
                       [
                        [m_edge:objects(CardId, P, Context)
-                        || P <- [author, target, liked_by]]
+                        || P <- [author, target, likes]]
                        || CardId <- CardIds])
                    )
                  ),
