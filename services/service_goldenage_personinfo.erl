@@ -1,4 +1,5 @@
 -module(service_goldenage_personinfo).
+-svc_needauth(true).
 
 -export([process_get/2]).
 
