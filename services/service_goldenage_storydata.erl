@@ -32,7 +32,7 @@ process_get(_, Context) ->
 
 chapter_info(Id, Context) ->
     {struct, P} = ga_util:rsc_json(Id, [title], Context),
-    Cards = m_edge:objects(Id, has_card, Context),
+    Cards = [card_info(ZId, Context) || ZId <- m_edge:objects(Id, has_card, Context)],
 
     {struct,
      [
