@@ -32,12 +32,7 @@ process_get(_, Context) ->
 
 chapter_info(Id, Context) ->
     {struct, P} = ga_util:rsc_json(Id, [title], Context),
-    Cards = lists:sort(
-              fun({struct, A}, {struct, B}) ->
-                      proplists:get_value(time, A) < proplists:get_value(time, B)
-              end,
-              [card_info(ZId, Context) || ZId <- m_edge:objects(Id, has_card, Context)]
-             ),
+    Cards = m_edge:objects(Id, has_card, Context),
 
     {struct,
      [
