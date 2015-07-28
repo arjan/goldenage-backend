@@ -41,7 +41,8 @@ process_get(_, Context) ->
                  || GroupId <- GroupIds]}},
 
       {persons,
-       service_goldenage_storydata:get_persons_for_card_ids(PersonCards, ImgOpts, Context)}
+       proplists:get_value(persons, service_goldenage_storydata:get_persons_for_card_ids(PersonCards, ImgOpts, Context))}
+      
       | Props
      ]}.
 

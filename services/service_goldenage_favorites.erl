@@ -9,5 +9,5 @@ process_get(_, Context) ->
     CardIds = lists:reverse(m_edge:objects(Context#context.user_id, likes, Context)),
     {struct,
      [{cards, {array, [service_goldenage_storydata:card_info(C, Context) || C <- CardIds]}},
-      {persons, service_goldenage_storydata:get_persons_for_card_ids(CardIds, [{width, 600}], Context)}
+      {persons, proplists:get_value(persons, service_goldenage_storydata:get_persons_for_card_ids(CardIds, [{width, 600}], Context))}
      ]}.

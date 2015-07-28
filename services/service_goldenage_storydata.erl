@@ -19,11 +19,10 @@ process_get(_, Context) ->
     {
       {struct,
        [{chapters,
-         {array, [chapter_info(ChId, Context) || ChId <- m_edge:objects(Id, has_chapter, Context)]}},
-        {persons,
-         collect_person_info(Id, ImgOpts, Context)}
-        | StoryInfo
-       ]},
+         {array, [chapter_info(ChId, Context) || ChId <- m_edge:objects(Id, has_chapter, Context)]}}        
+        | StoryInfo]
+       ++ collect_extra_person_info(Id, ImgOpts, Context)
+      },
       z_context:set_resp_header("Cache-Control", "max-age=3600", Context)
     }.      
 
@@ -64,7 +63,7 @@ card_info(Id, Context) ->
     ga_util:rsc_json(Id, [title, summary, summary2, image, images, card_date, hashtags, time, {edge, author}, {edge, target}, {edges, likes}], Context).
 
 
-collect_person_info(StoryId, ImgOpts, Context) ->
+collect_extra_person_info(StoryId, ImgOpts, Context) ->
     ChapterIds = m_edge:objects(StoryId, has_chapter, Context),
     CardIds =  lists:flatten(
                  [m_edge:objects(ChId, has_card, Context) ||  ChId <- ChapterIds]),
@@ -76,7 +75,7 @@ get_persons_for_card_ids(CardIds, ImgOpts, Context) ->
     get_persons_for_card_ids(CardIds, ImgOpts, [], Context).
 
 get_persons_for_card_ids(CardIds, ImgOpts, ExtraPersons, Context) ->
-    PersonIds = sets:to_list(
+    AllIds = sets:to_list(
                   sets:from_list(
                     lists:flatten(
                       [
@@ -86,6 +85,15 @@ get_persons_for_card_ids(CardIds, ImgOpts, ExtraPersons, Context) ->
                     ++ ExtraPersons
                    )
                  ),
-    {struct,
+    {GroupIds, PersonIds} =
+        lists:partition(fun(I) -> m_rsc:is_a(I, group, Context) end, AllIds),
+    [
+     {persons, 
+      {struct,
      [{P, ga_util:rsc_json(P, [title, subtitle, summary, image, keyvalue], ImgOpts, Context)}
-      || P <- PersonIds]}.
+      || P <- PersonIds]}},
+     {groups,
+      {struct,
+       [{P, ga_util:rsc_json(P, [title, subtitle, summary, image, keyvalue], ImgOpts, Context)}
+        || P <- GroupIds]}}
+    ].
