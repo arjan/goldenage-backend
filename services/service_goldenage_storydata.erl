@@ -13,7 +13,7 @@ process_get(_, Context) ->
         P -> throw({error, not_a_story, z_convert:to_atom(P)})
     end,
 
-    {struct, StoryInfo} = ga_util:rsc_json(Id, [title, subtitle, summary, publication_start, thumbnail, lang, image], Context),
+    {struct, StoryInfo} = ga_util:rsc_json(Id, [title, subtitle, summary, publication_start, thumbnail, lang, image, {edges, network}], Context),
     ImgOpts = [{width, 600}],
 
     {
@@ -68,9 +68,14 @@ collect_person_info(StoryId, ImgOpts, Context) ->
     ChapterIds = m_edge:objects(StoryId, has_chapter, Context),
     CardIds =  lists:flatten(
                  [m_edge:objects(ChId, has_card, Context) ||  ChId <- ChapterIds]),
-    get_persons_for_card_ids(CardIds, ImgOpts, Context).
+    ExtraPersons = m_edge:objects(StoryId, network, Context),
+    get_persons_for_card_ids(CardIds, ImgOpts, ExtraPersons, Context).
+
 
 get_persons_for_card_ids(CardIds, ImgOpts, Context) ->
+    get_persons_for_card_ids(CardIds, ImgOpts, [], Context).
+
+get_persons_for_card_ids(CardIds, ImgOpts, ExtraPersons, Context) ->
     PersonIds = sets:to_list(
                   sets:from_list(
                     lists:flatten(
@@ -78,6 +83,7 @@ get_persons_for_card_ids(CardIds, ImgOpts, Context) ->
                        [m_edge:objects(CardId, P, Context)
                         || P <- [author, target, likes]]
                        || CardId <- CardIds])
+                    ++ ExtraPersons
                    )
                  ),
     {struct,
