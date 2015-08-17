@@ -87,6 +87,15 @@ get_persons_for_card_ids(CardIds, ImgOpts, ExtraPersons, Context) ->
                  ),
     {GroupIds, PersonIds} =
         lists:partition(fun(I) -> m_rsc:is_a(I, group, Context) end, AllIds),
+ 
+    HashtagIds = sets:to_list(
+                  sets:from_list(
+                    lists:flatten(
+                      [m_edge:objects(CardId, has_hashtag, Context) || CardId <- CardIds])
+                   )
+                 ),
+
+    
     [
      {persons, 
       {struct,
@@ -95,5 +104,10 @@ get_persons_for_card_ids(CardIds, ImgOpts, ExtraPersons, Context) ->
      {groups,
       {struct,
        [{P, ga_util:rsc_json(P, [title, subtitle, summary, image, keyvalue], ImgOpts, Context)}
-        || P <- GroupIds]}}
+        || P <- GroupIds]}},
+
+     {hashtags,
+      {struct,
+       [{H, ga_util:rsc_json(H, [title, summary, image], ImgOpts, Context)} || H <- HashtagIds]}}
+     
     ].
