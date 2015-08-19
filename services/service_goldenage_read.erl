@@ -11,6 +11,8 @@ process_post(_, Context) ->
 
     SudoContext = z_acl:sudo(Context),
 
+    lager:info("service_goldenage_read: user=~p, card_id=~p delete=~p", [Context#context.user_id, CardId, Delete]),
+    
     case Delete of
         false ->
             %% add edge
