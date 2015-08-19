@@ -11,7 +11,7 @@ process_post(_, Context) ->
 
     SudoContext = z_acl:sudo(Context),
 
-    lager:info("service_goldenage_read: user=~p, card_id=~p delete=~p", [Context#context.user_id, CardId, Delete]),
+    lager:info("service_goldenage_read: user=~p, card_id=~p delete=~p, delete2=~p", [Context#context.user_id, CardId, Delete, z_context:get_q("delete", Context)]),
     
     case Delete of
         false ->
