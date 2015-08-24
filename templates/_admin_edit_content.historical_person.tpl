@@ -6,7 +6,7 @@
 
 {% block widget_content %}
     <fieldset ng-app="ga-historical-person" ng-controller="main">
-        <input style="display: none" type="text" name="keyvalue" ng-model="keyvalue" value='{{ r.keyvalue|default:[]|to_json }}' />
+        <input style="display: none" type="text" name="keyvalue" ng-model="keyvalue" value='{{ r.keyvalue|default:[]|to_json_safe }}' />
 
         <div class="row">
             <div class="col-lg-4 col-md-4">
