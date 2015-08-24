@@ -6,5 +6,5 @@ to_json_safe(Value, Context) ->
     try
         filter_to_json:to_json(Value, Context)
     catch _:_ ->
-            []
+            <<"[]">>
     end.
