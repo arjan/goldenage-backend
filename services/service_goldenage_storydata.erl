@@ -103,7 +103,7 @@ get_persons_for_card_ids(CardIds, ImgOpts, ExtraPersons, Context) ->
       || P <- PersonIds]}},
      {groups,
       {struct,
-       [{P, ga_util:rsc_json(P, [title, subtitle, summary, image, keyvalue], ImgOpts, Context)}
+       [{P, ga_util:rsc_json(P, [title, subtitle, summary, image, {subject_edges, has_group, members}], ImgOpts, Context)}
         || P <- GroupIds]}},
 
      {hashtags,
