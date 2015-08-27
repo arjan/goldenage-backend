@@ -65,7 +65,7 @@ map_rsc_json_field(Id, images, ImgOpts, Context) ->
 map_rsc_json_field(Id, hashtags, _ImgOpts, Context) ->
     Objects = m_edge:objects(Id, has_hashtag, Context),
     case length(Objects) of
-        N when N > 1 ->
+        N when N > 0 ->
             {hashtags, {array, [rsc_json(O, [id, title], Context) || O <- Objects]}};
         _ ->
             undefined
