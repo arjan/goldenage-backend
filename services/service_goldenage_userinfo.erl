@@ -10,6 +10,6 @@ process_get(_, Context) ->
     info(Context#context.user_id, Context).
 
 info(UserId, Context) ->
-    ga_util:rsc_json(UserId, [title, email, image, {edges, likes}, {edges, read}], Context).
+    ga_util:rsc_json(UserId, [title, email, image, {edges, likes}, {edges, read}], [{width, 600}, {height, 600}, {crop, true}], Context).
 
 
