@@ -27,6 +27,7 @@
 
 -export([
          manage_schema/2,
+         observe_acl_is_allowed/2,
          observe_rsc_update/3,
          observe_service_authorize/2
         ]).
@@ -34,6 +35,17 @@
 %%====================================================================
 %% support functions go here
 %%====================================================================
+
+observe_acl_is_allowed(#acl_is_allowed{object=#acl_edge{subject_id=U}}, Context) ->
+    UserId = z_acl:user(Context),
+    U =:= UserId orelse m_rsc:p(U, creator_id, Context) =:= UserId;
+observe_acl_is_allowed(#acl_is_allowed{action=insert, object=#acl_rsc{category=image}}, _Context) ->
+    true;
+observe_acl_is_allowed(#acl_is_allowed{action=insert, object=#acl_media{}}, _Context) ->
+    true;
+observe_acl_is_allowed(What, _C) ->
+    lager:warning("What?: ~p", [What]),
+    undefined.
 
 manage_schema(install, _Context) ->
     #datamodel{
@@ -88,7 +100,8 @@ manage_schema(install, _Context) ->
                    {status_update, card, [{title, <<"Card - Status update">>}, {feature_show_address, false}]},
                    {attend_event, card, [{title, <<"Card - Attending event">>}, {feature_show_address, false}]},
                    {tag_picture, card, [{title, <<"Card - Tag in picture">>}, {feature_show_address, false}]},
-                   {join_group, card, [{title, <<"Card - Joined group">>}, {feature_show_address, false}]}
+                   {join_group, card, [{title, <<"Card - Joined group">>}, {feature_show_address, false}]},
+                   {photo_prompt, card, [{title, <<"Card - Photo prompt">>}, {feature_show_address, false}]}
 
                   ],
        predicates=[
@@ -129,7 +142,10 @@ manage_schema(install, _Context) ->
                    {read,
                     [{title, <<"Has read">>}],
                     [{profile, card}
-                    ]}
+                    ]},
+                   {photoupload,
+                    [{title, <<"Uploaded photo">>}],
+                    [{profile, media}]}
                   ]
       }.
 

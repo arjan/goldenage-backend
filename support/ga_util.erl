@@ -9,6 +9,8 @@ trans({struct, _}=V, _) ->
     V;
 trans({array, _}=V, _) ->
     V;
+trans({_, _}=TS, _) ->
+    z_dateformat:format(TS, "c", []);
 trans(T, Context) ->
     case z_utils:is_empty(T) of
         true -> null;
@@ -86,6 +88,9 @@ map_rsc_json_field(Id, {edge, Pred}, _ImgOpts, Context) ->
 map_rsc_json_field(Id, {edges, Pred}, _ImgOpts, Context) ->
     {Pred, {array, m_edge:objects(Id, Pred, Context)}};
 
+map_rsc_json_field(Id, photouploads, ImgOpts, Context) ->
+    {photouploads, photo_uploads(Id, ImgOpts, Context)};
+
 map_rsc_json_field(Id, {subject_edges, Pred, Name}, ImgOpts, Context) ->
     {Name, {array, [
                     ga_util:rsc_json(M, [title, subtitle, image], ImgOpts, Context)
@@ -97,3 +102,20 @@ map_rsc_json_field(Id, K, _, Context) ->
         null -> undefined;
         V -> {K, V}
     end.
+
+photo_uploads(Id, ImgOpts, Context) ->
+    O = m_edge:objects(Id, photoupload, Context),
+
+    ObjectsWithCard = lists:sort([{m_edge:object(ImgId, has_card, 1, Context), ImgId} || ImgId <- O]),
+    ImgObjects = [
+                  begin
+                      {struct, Props} = rsc_json(C, [image, created], ImgOpts, Context),
+                      [{card_id, I} | Props]
+                  end || {I, C} <- ObjectsWithCard],
+
+    AA = z_utils:group_proplists(card_id, ImgObjects),
+    SortFun = fun(A, B) -> proplists:get_value(created, A) > proplists:get_value(created, B) end,
+    {struct, 
+     [{K, {array, [{struct, proplists:delete(card_id, P)} || P <- lists:sort(SortFun, V)]}} || {K, V} <- AA]}.
+    
+
