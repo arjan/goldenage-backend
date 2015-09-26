@@ -12,7 +12,7 @@ process_post(_, Context) ->
         #upload{}=Upload ->
             case m_media:insert_file(Upload, [], Context) of
                 {ok, PhotoId} ->
-                    E = m_edge:insert(z_acl:user(Context), photoupload, PhotoId, Context),
+                    m_edge:insert(z_acl:user(Context), photoupload, PhotoId, Context),
                     case is_integer(CardId) of
                         true ->
                             m_edge:insert(PhotoId, has_card, CardId, Context);
@@ -24,7 +24,9 @@ process_post(_, Context) ->
                     throw({error, E})
             end
     end,
-    {struct, [{result, ok}]}.
+
+    ga_util:rsc_json(PhotoId, [image, created], [{width, 800}], Context).
+
 
 
 
