@@ -116,6 +116,6 @@ photo_uploads(Id, ImgOpts, Context) ->
                   end || {I, C} <- ObjectsWithStory],
 
     AA = z_utils:group_proplists(story_id, ImgObjects),
-    SortFun = fun(A, B) -> proplists:get_value(created, A) > proplists:get_value(created, B) end,
+    SortFun = fun(A, B) -> proplists:get_value(created, A) < proplists:get_value(created, B) end,
     {struct, 
      [{K, {array, [{struct, proplists:delete(story_id, P)} || P <- lists:sort(SortFun, V)]}} || {K, V} <- AA]}.
