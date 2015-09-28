@@ -44,7 +44,6 @@ observe_acl_is_allowed(#acl_is_allowed{action=insert, object=#acl_rsc{category=i
 observe_acl_is_allowed(#acl_is_allowed{action=insert, object=#acl_media{}}, _Context) ->
     true;
 observe_acl_is_allowed(What, _C) ->
-    lager:warning("What?: ~p", [What]),
     undefined.
 
 manage_schema(install, _Context) ->

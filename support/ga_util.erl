@@ -9,7 +9,7 @@ trans({struct, _}=V, _) ->
     V;
 trans({array, _}=V, _) ->
     V;
-trans({_, _}=TS, _) ->
+trans({{_,_,_}, {_,_,_}}=TS, _) ->
     z_dateformat:format(TS, "c", []);
 trans(T, Context) ->
     case z_utils:is_empty(T) of
