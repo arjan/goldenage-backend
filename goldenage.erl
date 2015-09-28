@@ -145,7 +145,10 @@ manage_schema(install, _Context) ->
                     ]},
                    {photoupload,
                     [{title, <<"Uploaded photo">>}],
-                    [{profile, media}]}
+                    [{profile, media}]},
+                   {has_story,
+                    [{title, <<"Belonging to story">>}],
+                    [{media, story}]}
                   ]
       }.
 

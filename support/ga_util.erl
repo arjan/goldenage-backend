@@ -80,10 +80,12 @@ map_rsc_json_field(Id, DF, _, Context) when DF =:= publication_start; DF =:= pub
 
 %% linked person; get first one
 map_rsc_json_field(Id, {edge, Pred}, _ImgOpts, Context) ->
+    map_rsc_json_field(Id, {edge, Pred, Pred}, _ImgOpts, Context);
+map_rsc_json_field(Id, {edge, Pred, K}, _ImgOpts, Context) ->
     case m_edge:objects(Id, Pred, Context) of
-        [] -> {Pred, null};
+        [] -> {K, null};
         [P|_] ->
-            {Pred, P}
+            {K, P}
     end;
 map_rsc_json_field(Id, {edges, Pred}, _ImgOpts, Context) ->
     {Pred, {array, m_edge:objects(Id, Pred, Context)}};
@@ -106,16 +108,14 @@ map_rsc_json_field(Id, K, _, Context) ->
 photo_uploads(Id, ImgOpts, Context) ->
     O = m_edge:objects(Id, photoupload, Context),
 
-    ObjectsWithCard = lists:sort([{m_edge:object(ImgId, has_card, 1, Context), ImgId} || ImgId <- O]),
+    ObjectsWithStory = lists:sort([{m_edge:object(ImgId, has_story, 1, Context), ImgId} || ImgId <- O]),
     ImgObjects = [
                   begin
-                      {struct, Props} = rsc_json(C, [image, created], ImgOpts, Context),
-                      [{card_id, I} | Props]
-                  end || {I, C} <- ObjectsWithCard],
+                      {struct, Props} = rsc_json(C, [image, created, {edge, has_card, card_id}], ImgOpts, Context),
+                      [{story_id, I} | Props]
+                  end || {I, C} <- ObjectsWithStory],
 
-    AA = z_utils:group_proplists(card_id, ImgObjects),
+    AA = z_utils:group_proplists(story_id, ImgObjects),
     SortFun = fun(A, B) -> proplists:get_value(created, A) > proplists:get_value(created, B) end,
     {struct, 
-     [{K, {array, [{struct, proplists:delete(card_id, P)} || P <- lists:sort(SortFun, V)]}} || {K, V} <- AA]}.
-    
-
+     [{K, {array, [{struct, proplists:delete(story_id, P)} || P <- lists:sort(SortFun, V)]}} || {K, V} <- AA]}.
