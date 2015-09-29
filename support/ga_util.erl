@@ -111,7 +111,7 @@ photo_uploads(Id, ImgOpts, Context) ->
     ObjectsWithStory = lists:sort([{m_edge:object(ImgId, has_story, 1, Context), ImgId} || ImgId <- O]),
     ImgObjects = [
                   begin
-                      {struct, Props} = rsc_json(C, [image, created, {edge, has_card, card_id}], ImgOpts, Context),
+                      {struct, Props} = rsc_json(C, [image, created, {edge, has_card, card_id}], [{width, 500}], Context),
                       [{story_id, I} | Props]
                   end || {I, C} <- ObjectsWithStory],
 
