@@ -1,13 +1,20 @@
 Hollanders van de Gouden Eeuw backend code
 ==========================================
 
-This repository contains the backend code for the project "Hollanders
-van de Gouden Eeuw" which is an app which uses Bluetooth beacons to
-provide contextual information to museum visitors.
+This repository contains the backend code for the project
+[Hollanders van de Gouden Eeuw](http://hollandersvandegoudeneeuw.nl/)
+which is an app which uses Bluetooth beacons to provide contextual
+information to museum visitors.
 
 To try to reach a young audience, the information is presented to the
 app user as information "cards" which look like social media status
 updates.
+
+The app has been built in native iOS and Android versions. When
+visitors return home, they can login onto the
+[web frontend](http://login.hollandersvandegoudeneeuw.nl/#/login) to
+re-read the stories they have experienced.
+
 
 
 Installation
